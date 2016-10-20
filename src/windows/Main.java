@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args){
         try {
             BeautyEyeLNFHelper.frameBorderStyle=BeautyEyeLNFHelper.FrameBorderStyle.generalNoTranslucencyShadow;
-            BeautyEyeLNFHelper.debug=true;
+            BeautyEyeLNFHelper.debug=false;
             BeautyEyeLNFHelper.launchBeautyEyeLNF();
             UIManager.put("RootPane.setupButtonVisible",false);
             new MainWindow().setVisible(true);

@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
 /**
+ * 图像处理
  * Created by ChienHo on 16/10/20.
  */
 public class ImageProcess {
@@ -57,39 +58,39 @@ public class ImageProcess {
      */
     public static BufferedImage getCutImage(BufferedImage src){
         int top,bottom,left,right;
-        boolean blank;
+        int blank;
         //获取上方空白像素数量
-        for(blank=true,top=0;blank&&top<Config.IMAGE_HEIGHT;top++){
+        for(blank=top=0;blank<Config.CUT_THRESHOLD&&top<Config.IMAGE_HEIGHT;top++){
             for(int i=0;i<Config.IMAGE_WIDTH;i++){
                 if(src.getRGB(i,top)==-0x1000000){
-                    blank=false;
+                    blank++;
                     break;
                 }
             }
         }
         //获取左方空白像素数量
-        for(blank=true,left=0;blank&&left<Config.IMAGE_WIDTH;left++){
+        for(blank=left=0;blank<Config.CUT_THRESHOLD&&left<Config.IMAGE_WIDTH;left++){
             for(int i=top;i<Config.IMAGE_HEIGHT;i++){
                 if(src.getRGB(left,i)==-0x1000000){
-                    blank=false;
+                    blank++;
                     break;
                 }
             }
         }
         //获取右方空白位置
-        for(blank=true,right=Config.IMAGE_WIDTH-1;blank&&right>=0;right--){
+        for(blank=0,right=Config.IMAGE_WIDTH-1;blank<Config.CUT_THRESHOLD&&right>=0;right--){
             for(int i=top;i<Config.IMAGE_HEIGHT;i++){
                 if(src.getRGB(right,i)==-0x1000000){
-                    blank=false;
+                    blank++;
                     break;
                 }
             }
         }
         //获取底部空白位置
-        for(blank=true,bottom=Config.IMAGE_HEIGHT-1;blank&&bottom>=0;bottom--){
+        for(blank=0,bottom=Config.IMAGE_HEIGHT-1;blank<Config.CUT_THRESHOLD&&bottom>=0;bottom--){
             for(int i=left;i<right;i++){
                 if(src.getRGB(i,bottom)==-0x1000000){
-                    blank=false;
+                    blank++;
                     break;
                 }
             }
@@ -126,5 +127,15 @@ public class ImageProcess {
             if(val<trough.get(0)&&val>trough.get(1)&&wave[val]<wave[min])min=val;
         }
         return min;
+    }
+
+    class Point{
+        int x;
+        int y;
+
+        Point(int x,int y){
+            this.x=x;
+            this.y=y;
+        }
     }
 }

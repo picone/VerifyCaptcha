@@ -1,55 +1,61 @@
 package windows;
 
 import common.Config;
+import utils.ImageClassify;
 import utils.ImageCreate;
 import utils.ImageProcess;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
 /**
+ * 训练Panel
  * Created by ChienHo on 16/10/20.
  */
 public class TrainPanel extends JPanel {
 
-    private JLabel captcha,answer;
-    private JTextField command;
-    private JLabel right_text,wrong_text,percentage_text;
+    private JLabel captcha_before,captcha_after;
+    private JProgressBar progress_bar;
+    private JButton start;
 
     public TrainPanel(){
         setLayout(new BorderLayout());
-        Box train_box=Box.createVerticalBox();//左侧训练区
-        Box info_box=Box.createVerticalBox();//右侧识别区
+        Box captcha_box=Box.createHorizontalBox();//验证码区
 
-        captcha=new JLabel();
-        captcha.setSize(Config.IMAGE_WIDTH,Config.IMAGE_HEIGHT);
-        train_box.add(captcha);
-        answer=new JLabel("正确答案:");
-        train_box.add(answer);
-        command=new JTextField();
-        train_box.add(command);
-        add(train_box,BorderLayout.CENTER);
+        captcha_before=new JLabel();
+        captcha_before.setPreferredSize(new Dimension(Config.IMAGE_WIDTH,Config.IMAGE_HEIGHT));
+        captcha_box.add(captcha_before);
+        captcha_box.add(Box.createHorizontalStrut(2));
+        captcha_after=new JLabel();
+        captcha_after.setPreferredSize(new Dimension(Config.IMAGE_WIDTH,Config.IMAGE_HEIGHT));
+        captcha_box.add(captcha_after);
+        add(captcha_box,BorderLayout.CENTER);
 
-        right_text=new JLabel("答对题数:0");
-        info_box.add(right_text);
-        wrong_text=new JLabel("答错题数:0");
-        info_box.add(wrong_text);
-        percentage_text=new JLabel("正确率:0%");
-        info_box.add(percentage_text);
-        add(info_box,BorderLayout.EAST);
+        start=new JButton("开始训练");
+        add(start,BorderLayout.SOUTH);
 
-        train();//开始训练
+        start.addActionListener(e -> {
+            remove(start);
+            progress_bar=new JProgressBar();
+            progress_bar.setMaximum(Config.CAPTCHA_CHAR.length);
+            add(progress_bar,BorderLayout.SOUTH);
+            train();//开始训练
+        });
     }
 
     private void train(){
-        ImageCreate create=new ImageCreate();
-        BufferedImage image=create.getImage();
-
-        image=ImageProcess.getBinaryImage(image);//二值化图像
-        image=ImageProcess.getCutImage(image);
-
-        captcha.setIcon(new ImageIcon(image));
-        answer.setText("正确答案:"+create.getResult());
+        for(char c:Config.CAPTCHA_CHAR){
+            ImageCreate create=new ImageCreate(c);
+            BufferedImage image=create.getImage();//生成图像
+            captcha_before.setIcon(new ImageIcon(image));
+            image=ImageProcess.getBinaryImage(image);//二值化图像
+            image=ImageProcess.getCutImage(image);//剪裁图像
+            captcha_after.setIcon(new ImageIcon(image));//显示图像
+            progress_bar.setValue(progress_bar.getValue()+1);
+            ImageClassify.train(create.getResult(),image);
+        }
     }
 }
