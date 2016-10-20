@@ -45,11 +45,11 @@ public class TrainPanel extends JPanel {
     private void train(){
         ImageCreate create=new ImageCreate();
         BufferedImage image=create.getImage();
-        image=ImageProcess.getBinaryImage(image);
+
+        image=ImageProcess.getBinaryImage(image);//二值化图像
+        image=ImageProcess.getCutImage(image);
 
         captcha.setIcon(new ImageIcon(image));
         answer.setText("正确答案:"+create.getResult());
-
-        //ImageProcess.getBinaryImage(image);
     }
 }

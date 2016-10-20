@@ -10,7 +10,7 @@ public class MainWindow extends JFrame {
 
     public MainWindow(){
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("验证码识别");
+        setTitle("图像识别");
         setLayout(new BorderLayout());
         JTabbedPane tp=new JTabbedPane();
         tp.add("训练",new TrainPanel());

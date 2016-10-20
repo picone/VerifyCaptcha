@@ -29,7 +29,6 @@ public class ImageCreate {
      */
     public BufferedImage getImage() {
         BufferedImage buffer=new BufferedImage(Config.IMAGE_WIDTH,Config.IMAGE_HEIGHT,BufferedImage.TYPE_INT_RGB);
-        Font font=new Font(Config.FONT_NAME,Font.PLAIN,Config.FONT_SIZE);
         Graphics2D g=buffer.createGraphics();
         //设置背景颜色
         g.setColor(Color.WHITE);
@@ -37,8 +36,8 @@ public class ImageCreate {
         //绘制文字
         g.setColor(new Color(randomInt(Config.FONT_COLOR_MIN_RED,255),randomInt(Config.FONT_COLOR_MIN_GREEN,255),
                 randomInt(Config.FONT_COLOR_MIN_BLUE,255)));
-        g.setFont(font);
-        g.drawString(String.valueOf(result),0,Config.IMAGE_HEIGHT);
+        g.setFont(new Font(Config.FONT_NAME,Font.PLAIN,Config.FONT_SIZE));
+        g.drawString(String.valueOf(result),0,Config.IMAGE_HEIGHT-5);
         return buffer;
     }
 
