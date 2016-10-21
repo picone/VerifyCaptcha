@@ -16,7 +16,7 @@ public class ImageClassify {
         return classify(transImage(img));
     }
 
-    public static char classify(int[] sequence){
+    private static char classify(boolean[] sequence){
         if(samples.size()==0)return 0x00;//未被训练无法识别
         int min_distance=Integer.MAX_VALUE;
         char result=0x00;
@@ -34,15 +34,22 @@ public class ImageClassify {
         train(tag,transImage(img));
     }
 
-    public static void train(char tag,int[] sequence){
+    private static void train(char tag, boolean[] sequence){
         samples.add(new Sample(tag,sequence));
     }
 
-    private static int[] transImage(BufferedImage img){
-        int[] sequence=new int[Config.IMAGE_WIDTH*Config.IMAGE_HEIGHT];
+    /**
+     * @return 样本训练个数
+     */
+    public static int getSampleCount(){
+        return samples.size();
+    }
+
+    private static boolean[] transImage(BufferedImage img){
+        boolean[] sequence=new boolean[Config.IMAGE_WIDTH*Config.IMAGE_HEIGHT];
         for(int i=0;i<Config.IMAGE_WIDTH;i++){
             for(int j=0;j<Config.IMAGE_HEIGHT;j++){
-                sequence[i*Config.IMAGE_WIDTH+j]=img.getRGB(i,j)==-0x1000000?1:0;
+                sequence[i*Config.IMAGE_WIDTH+j]=img.getRGB(i,j)==-0x1000000;
             }
         }
         return sequence;
@@ -50,9 +57,9 @@ public class ImageClassify {
 
     private static class Sample{
         char tag;
-        int[] sequence;
+        boolean[] sequence;
 
-        Sample(char tag, int[] sequence){
+        Sample(char tag, boolean[] sequence){
             this.tag=tag;
             this.sequence=sequence;
         }

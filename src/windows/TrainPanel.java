@@ -21,7 +21,7 @@ public class TrainPanel extends JPanel {
     private JProgressBar progress_bar;
     private JButton start;
 
-    public TrainPanel(){
+    TrainPanel(){
         setLayout(new BorderLayout());
         Box captcha_box=Box.createHorizontalBox();//验证码区
 
