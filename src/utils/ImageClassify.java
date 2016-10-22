@@ -18,12 +18,18 @@ public class ImageClassify {
 
     private static char classify(boolean[] sequence){
         if(samples.size()==0)return 0x00;//未被训练无法识别
-        int min_distance=Integer.MAX_VALUE;
+        //int min_distance=Integer.MAX_VALUE;
+        double max_similar=0;
         char result=0x00;
         for(Sample sample:samples){
-            int distance=EditDistance.distance(sample.sequence,sequence);
+            /*int distance=Distance.editDistance(sample.sequence,sequence);
             if(distance<min_distance){
                 min_distance=distance;
+                result=sample.tag;
+            }*/
+            double similar=Distance.cosDistance(sample.sequence,sequence);
+            if(similar>max_similar){
+                max_similar=similar;
                 result=sample.tag;
             }
         }
