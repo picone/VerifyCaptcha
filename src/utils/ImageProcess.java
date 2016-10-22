@@ -4,7 +4,9 @@ import common.Config;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * 图像处理
@@ -46,6 +48,52 @@ public class ImageProcess {
         for(int i=0;i<Config.IMAGE_WIDTH;i++){
             for(int j=0;j<Config.IMAGE_HEIGHT;j++){
                 dst.setRGB(i,j,gray[i][j]>threshold?0xFFFFFF:0x00000000);
+            }
+        }
+        return dst;
+    }
+
+    /**
+     * 使用广度优先遍历找到所属字符路径
+     * @param src
+     * @return 剪裁后的字符
+     */
+    public static BufferedImage getCutNoiseImage(BufferedImage src){
+        HashMap<String,Boolean> visited=new HashMap<>();
+        LinkedList<Point> queue=new LinkedList<>();
+        BufferedImage dst=new BufferedImage(Config.IMAGE_WIDTH,Config.IMAGE_HEIGHT,BufferedImage.TYPE_BYTE_BINARY);
+        boolean has_found=false;
+        Graphics g=dst.getGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0,0,Config.IMAGE_WIDTH,Config.IMAGE_HEIGHT);
+        for(int i=0;i<Config.IMAGE_WIDTH&&!has_found;i++){
+            for(int j=0;j<Config.IMAGE_HEIGHT&&!has_found;j++){
+                if(src.getRGB(i,j)==-0x1000000){
+                    queue.clear();
+                    visited.clear();
+                    queue.add(new Point(i,j));
+                    while(!queue.isEmpty()){
+                        Point p=queue.poll();
+                        if(visited.containsKey(p.x+","+p.y))continue;
+                        visited.put(p.x+","+p.y,true);
+                        //检查8个方向的点是否有像素
+                        if(p.x-1>=0&&src.getRGB(p.x-1,p.y)==-0x1000000&&!visited.containsKey((p.x-1)+","+p.y))queue.add(new Point(p.x-1,p.y));
+                        if(p.y-1>=0&&src.getRGB(p.x,p.y-1)==-0x1000000&&!visited.containsKey(p.x+","+(p.y-1)))queue.add(new Point(p.x,p.y-1));
+                        if(p.x+1<Config.IMAGE_WIDTH&&src.getRGB(p.x+1,p.y)==-0x1000000&&!visited.containsKey((p.x+1)+","+p.y))queue.add(new Point(p.x+1,p.y));
+                        if(p.y+1<Config.IMAGE_HEIGHT&&src.getRGB(p.x,p.y+1)==-0x1000000&&!visited.containsKey(p.x+","+(p.y+1)))queue.add(new Point(p.x,p.y+1));
+                        if(p.x-1>=0&&p.y-1>=0&&src.getRGB(p.x-1,p.y-1)==-0x1000000&&!visited.containsKey((p.x-1)+","+(p.y-1)))queue.add(new Point(p.x-1,p.y-1));
+                        if(p.x-1>=0&&p.y+1<Config.IMAGE_HEIGHT&&src.getRGB(p.x-1,p.y+1)==-0x1000000&&!visited.containsKey((p.x-1)+","+(p.y+1)))queue.add(new Point(p.x-1,p.y+1));
+                        if(p.x+1<Config.IMAGE_WIDTH&&p.y-1>=0&&src.getRGB(p.x+1,p.y-1)==-0x1000000&&!visited.containsKey((p.x+1)+","+(p.y-1)))queue.add(new Point(p.x+1,p.y-1));
+                        if(p.x+1<Config.IMAGE_WIDTH&&p.y+1<Config.IMAGE_HEIGHT&&src.getRGB(p.x+1,p.y+1)==-0x1000000&&!visited.containsKey((p.x+1)+","+(p.y+1)))queue.add(new Point(p.x+1,p.y+1));
+                    }
+                    if(visited.size()>Config.CHAR_THRESHOLD){
+                        for(Map.Entry<String,Boolean> val:visited.entrySet()){
+                            String[] point=val.getKey().split(",");
+                            dst.setRGB(Integer.parseInt(point[0]),Integer.parseInt(point[1]),0x00000000);
+                        }
+                        has_found=true;
+                    }
+                }
             }
         }
         return dst;
@@ -97,7 +145,8 @@ public class ImageProcess {
         }
         //切割并缩放图片
         BufferedImage dst=new BufferedImage(Config.IMAGE_WIDTH,Config.IMAGE_HEIGHT,BufferedImage.TYPE_BYTE_BINARY);
-        dst.getGraphics().drawImage(src.getSubimage(left,top,right-left,bottom-top),0,0,Config.IMAGE_WIDTH,Config.IMAGE_HEIGHT,null);
+        if(right>left&&bottom>top)
+            dst.getGraphics().drawImage(src.getSubimage(left,top,right-left,bottom-top),0,0,Config.IMAGE_WIDTH,Config.IMAGE_HEIGHT,null);
         return dst;
     }
 
@@ -129,7 +178,7 @@ public class ImageProcess {
         return min;
     }
 
-    class Point{
+    private static class Point{
         int x;
         int y;
 

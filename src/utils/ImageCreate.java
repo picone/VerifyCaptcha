@@ -14,6 +14,7 @@ public class ImageCreate {
 
     private char result;//答案
     private Random random=new Random();
+    public boolean hasNoise=true;
 
     public ImageCreate() {
         result=Config.CAPTCHA_CHAR[random.nextInt(Config.CAPTCHA_CHAR.length)];
@@ -39,10 +40,12 @@ public class ImageCreate {
         g.setFont(new Font(Config.FONT_NAME,Font.PLAIN,Config.FONT_SIZE));
         g.drawString(String.valueOf(result),0,Config.IMAGE_HEIGHT-5);
         //生成噪点
-        for(int i=0;i<Config.NOISE_NUMBER;i++){
-            g.setColor(new Color(randomInt(Config.FONT_COLOR_MIN_RED,255),randomInt(Config.FONT_COLOR_MIN_GREEN,255),
-                    randomInt(Config.FONT_COLOR_MIN_BLUE,255)));
-            g.fillArc(randomInt(0,Config.IMAGE_WIDTH),randomInt(0,Config.IMAGE_HEIGHT),Config.NOISE_SIZE,Config.NOISE_SIZE,0,360);
+        if(hasNoise){
+            for(int i=0;i<Config.NOISE_NUMBER;i++){
+                g.setColor(new Color(randomInt(Config.FONT_COLOR_MIN_RED,255),randomInt(Config.FONT_COLOR_MIN_GREEN,255),
+                        randomInt(Config.FONT_COLOR_MIN_BLUE,255)));
+                g.fillArc(randomInt(0,Config.IMAGE_WIDTH),randomInt(0,Config.IMAGE_HEIGHT),Config.NOISE_SIZE,Config.NOISE_SIZE,0,360);
+            }
         }
         return buffer;
     }
